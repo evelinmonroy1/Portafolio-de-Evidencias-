@@ -1,0 +1,21 @@
+---
+import Icon from '../Icon.astro';
+import Evidencias from '../Evidencias.astro';
+import TarjetaProyecto from '../TarjetaProyecto.astro';
+import { getCollection } from 'astro:content';
+const proyectos = (await getCollection('proyectos')).sort((a, b) => (a.data.orden ?? 99) - (b.data.orden ?? 99));
+---
+<section class="block" id="proyectos">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="ico"><Icon name="code" /></span>08 · Trabajo práctico</span>
+      <h2>Mis proyectos</h2>
+      <div class="lead"><p>Trabajos, sistemas y aplicaciones que he desarrollado durante mi formación: qué buscaban resolver, con qué los construí, cuál fue mi participación y qué resultados obtuve.</p></div>
+    </div>
+    <div class="grid g2">
+      {proyectos.length === 0 && <div class="empty" style="grid-column:1/-1">Todavía no hay proyectos. Agrega un archivo <code>.md</code> en <code>src/content/proyectos/</code>.</div>}
+      {proyectos.map((p) => <TarjetaProyecto proyecto={p} />)}
+    </div>
+    <Evidencias seccion="proyectos" />
+  </div>
+</section>

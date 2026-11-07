@@ -1,0 +1,40 @@
+---
+import Icon from './Icon.astro';
+import { obtenerDocumentos } from '../lib/evidencias';
+
+interface Props { seccion: string; titulo?: string }
+const { seccion, titulo = 'Evidencias y documentos descargables' } = Astro.props;
+const docs = obtenerDocumentos(seccion);
+---
+<div class="evidence" data-section={seccion}>
+  <div class="ev-head">
+    <h3><Icon name="folder" size={18} />{titulo}</h3>
+    {docs.length > 0 && <span class="meta-count">{docs.length} {docs.length === 1 ? 'archivo' : 'archivos'}</span>}
+  </div>
+  {docs.length === 0 ? (
+    <div class="empty">Aún no hay documentos en este apartado.</div>
+  ) : (
+    <div class="ev-list">
+      {docs.map((d) => (
+        <article class="doc">
+          <div class="doc-top">
+            <span class="doc-ico">{d.extension.slice(0, 4)}</span>
+            <div>
+              <h4>{d.titulo}</h4>
+              <span class="meta">{d.extension} · {d.tamano}</span>
+            </div>
+          </div>
+          {d.descripcion && <p>{d.descripcion}</p>}
+          <div class="row">
+            {d.extension === 'PDF' ? (
+              <button class="btn sm soft" type="button" data-ver={d.url} data-titulo={d.titulo}>Ver</button>
+            ) : (
+              <a class="btn sm soft" href={d.url} target="_blank" rel="noopener">Ver</a>
+            )}
+            <a class="btn sm ghost" href={d.url} download={d.archivo}>Descargar</a>
+          </div>
+        </article>
+      ))}
+    </div>
+  )}
+</div>

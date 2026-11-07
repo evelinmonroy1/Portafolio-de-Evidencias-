@@ -1,0 +1,120 @@
+---
+import { hoy, plazos, prioridades, reflexionValores } from '../data/metas';
+
+const SMART = [
+  ['especifica', 'S', 'Específica'],
+  ['medible', 'M', 'Medible'],
+  ['alcanzable', 'A', 'Alcanzable'],
+  ['relevante', 'R', 'Relevante'],
+  ['temporal', 'T', 'Temporal'],
+] as const;
+const claseP = { Alta: 'p-alta', Media: 'p-media', Baja: 'p-baja' } as const;
+---
+<div class="ltm" data-ltm>
+  <h3 class="subhead">Línea del tiempo de mis metas</h3>
+  <p class="ltm-hint">Selecciona un punto de la línea para ver mis metas de ese plazo. Abre cada meta para ver el detalle.</p>
+
+  <div class="ltm-track" role="tablist" aria-label="Plazos de mis metas">
+    <div class="ltm-node is-now">
+      <span class="ltm-dot"></span>
+      <span class="ltm-label">Hoy</span>
+      <span class="ltm-date">{hoy.fecha}</span>
+    </div>
+    {plazos.map((p, i) => (
+      <button
+        class={`ltm-node${i === 0 ? ' active' : ''}`}
+        type="button"
+        role="tab"
+        id={`tab-${p.id}`}
+        aria-controls={`panel-${p.id}`}
+        aria-selected={i === 0 ? 'true' : 'false'}
+        data-tab={p.id}
+      >
+        <span class="ltm-dot"></span>
+        <span class="ltm-label">{p.etiqueta}</span>
+        <span class="ltm-date">{p.fecha}</span>
+      </button>
+    ))}
+  </div>
+
+  <div class="ltm-now card tint-lilac">
+    <span class="eyebrow">Punto de partida · {hoy.fecha}</span>
+    <p><b>{hoy.titulo}.</b> {hoy.texto}</p>
+  </div>
+
+  {plazos.map((p, i) => (
+    <div class="ltm-panel" role="tabpanel" id={`panel-${p.id}`} aria-labelledby={`tab-${p.id}`} data-panel={p.id}>
+      <div class="ltm-panel-head">
+        <h4>Metas a {p.etiqueta} <small>· {p.fecha}</small></h4>
+        <p>{p.resumen}</p>
+      </div>
+      {p.metas.map((m, j) => (
+        <details class="meta" open={i === 0 && j === 0}>
+          <summary>
+            <span class="meta-tags">
+              <span class={`pill tipo-${m.tipo.toLowerCase()}`}>{m.tipo}</span>
+              <span class={`pill ${claseP[m.prioridad]}`}>Prioridad {m.prioridad.toLowerCase()}</span>
+              <span class="pill valor">Valor: {m.valor}</span>
+            </span>
+            <span class="meta-title">{m.titulo}</span>
+          </summary>
+          <div class="meta-body">
+            <div class="smart">
+              {SMART.map(([k, letra, nombre]) => (
+                <div class="smart-row">
+                  <span class="smart-l" aria-hidden="true">{letra}</span>
+                  <div><b>{nombre}</b><p>{m.smart[k]}</p></div>
+                </div>
+              ))}
+            </div>
+            <div class="meta-grid">
+              <div class="mini"><h5>Pasos para lograrla</h5><ol>{m.pasos.map((x) => <li>{x}</li>)}</ol></div>
+              <div class="mini"><h5>Recursos</h5><ul>{m.recursos.map((x) => <li>{x}</li>)}</ul></div>
+              <div class="mini warn"><h5>Obstáculos</h5><ul>{m.obstaculos.map((x) => <li>{x}</li>)}</ul></div>
+              <div class="mini ok"><h5>Apoyos</h5><ul>{m.apoyos.map((x) => <li>{x}</li>)}</ul></div>
+              <div class="mini ind"><h5>Indicadores para revisar avances</h5><ul>{m.indicadores.map((x) => <li>{x}</li>)}</ul></div>
+            </div>
+          </div>
+        </details>
+      ))}
+    </div>
+  ))}
+
+  <div class="grid g2" style="align-items:start">
+    <div class="card">
+      <h3>Mis prioridades</h3>
+      <ol class="prio">{prioridades.map((x) => <li>{x}</li>)}</ol>
+    </div>
+    <div class="card tint-blush">
+      <h3>¿Cómo se conectan mis valores con mis metas?</h3>
+      {reflexionValores.map((x) => <p>{x}</p>)}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-ltm]').forEach((root) => {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-tab]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-panel]'));
+    const mostrar = (id: string, foco = false) => {
+      tabs.forEach((t) => {
+        const on = t.dataset.tab === id;
+        t.classList.toggle('active', on);
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (on && foco) t.focus();
+      });
+      panels.forEach((p) => (p.hidden = p.dataset.panel !== id));
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => mostrar(t.dataset.tab!));
+      t.addEventListener('keydown', (e) => {
+        const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        mostrar(tabs[(i + d + tabs.length) % tabs.length].dataset.tab!, true);
+      });
+    });
+    if (tabs[0]) mostrar(tabs[0].dataset.tab!);
+  });
+</script>

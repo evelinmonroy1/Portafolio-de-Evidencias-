@@ -1,0 +1,41 @@
+---
+import Icon from '../Icon.astro';
+import Evidencias from '../Evidencias.astro';
+import { sitio, iniciales } from '../../data/sitio';
+---
+<section class="block hero" id="inicio">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="sec-head" style="max-width:none">
+        <span class="eyebrow">Portafolio digital de Tutoría · Quinto semestre</span>
+        <h1>Hola, soy <em>{sitio.nombre}</em></h1>
+        <div class="lead"><p>Este portafolio reúne quién soy como persona, estudiante y futura ingeniera en informática. Aquí comparto mi personalidad, mis intereses, mis aprendizajes y mis metas, junto con las evidencias de mi trabajo durante la tutoría del quinto semestre.</p><p>Más que una carpeta de tareas, es un registro de mi crecimiento personal, académico y profesional.</p></div>
+        <div class="row" style="margin-top:8px">
+          <a class="btn" href="#perfil">Conóceme</a>
+          <a class="btn ghost" href="#proyectos">Ver mis proyectos</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <dl class="facts">
+          <dt>Carrera</dt><dd>Ingeniería Informática</dd>
+          <dt>Semestre</dt><dd>Quinto</dd>
+          <dt>Institución</dt><dd>Tecnológico de Estudios Superiores de San Felipe del Progreso</dd>
+          <dt>Asignatura</dt><dd>Tutoría</dd>
+        </dl>
+        <p style="font-size:.9rem;color:var(--muted);margin:0">Cada apartado incluye documentos que puedes ver y descargar.</p>
+      </div>
+    </div>
+
+    <div class="toc">
+      <a href="#perfil"><span class="n">01</span><strong>Sobre mí</strong><span class="d">Quién soy, qué me gusta y por qué elegí mi carrera.</span></a>
+      <a href="#manejo-emocional"><span class="n">02</span><strong>Manejo emocional</strong><span class="d">Reconocer, comprender y regular mis emociones.</span></a>
+      <a href="#proyecto-de-vida"><span class="n">03</span><strong>Proyecto de vida</strong><span class="d">Mi historia, metas y plan de acción.</span></a>
+      <a href="#vocacion-cientifica"><span class="n">04</span><strong>Vocación científica</strong><span class="d">Curiosidad, investigación e innovación.</span></a>
+      <a href="#administracion"><span class="n">05</span><strong>Administración por proyectos</strong><span class="d">Planear tiempos, recursos y riesgos.</span></a>
+      <a href="#plan-de-carrera"><span class="n">06</span><strong>Plan de carrera</strong><span class="d">Hacia dónde quiero crecer profesionalmente.</span></a>
+      <a href="#cv"><span class="n">07</span><strong>Mi CV personal</strong><span class="d">Versión visual y PDF descargable.</span></a>
+      <a href="#proyectos"><span class="n">08</span><strong>Mis proyectos</strong><span class="d">Sistemas y aplicaciones que he desarrollado.</span></a>
+      <a href="#reflexion"><span class="n">09</span><strong>Reflexión final</strong><span class="d">Lo que aprendí y cómo me visualizo.</span></a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,12 @@
+{
+  "poster-miniinvestigacion.pdf": {
+    "titulo": "Póster de miniinvestigación (PDF)",
+    "descripcion": "¿Es seguro el código que generan los asistentes de programación con IA? Versión para imprimir.",
+    "orden": 1
+  },
+  "poster-miniinvestigacion.png": {
+    "titulo": "Póster de miniinvestigación (imagen)",
+    "descripcion": "El mismo póster en formato PNG de alta resolución.",
+    "orden": 2
+  }
+}

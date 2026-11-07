@@ -1,0 +1,112 @@
+---
+import Icon from '../Icon.astro';
+import Evidencias from '../Evidencias.astro';
+import { sitio, iniciales } from '../../data/sitio';
+import { obtenerDocumentos, withBase } from '../../lib/evidencias';
+
+const docsCv = obtenerDocumentos('cv').filter((d) => d.extension === 'PDF');
+const cvPdf = docsCv.find((d) => /cv|curr/i.test(d.archivo)) ?? docsCv[0];
+
+// Niveles: [nombre, nivel, máximo]
+const habilidades: [string, number, number][] = [
+  ['Modelado UML (casos de uso y diagramas de actividades)', 4, 5],
+  ['Atención al cliente', 4, 5],
+  ['Aprendizaje continuo de nuevos conocimientos', 5, 5],
+  ['Uso de herramientas tecnológicas para mi formación', 5, 5],
+];
+const idiomas: [string, number, number][] = [
+  ['Español (nativo)', 8, 8],
+  ['Inglés', 6, 8],
+];
+---
+<section class="block" id="cv">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="ico"><Icon name="doc" /></span>07 · Tema</span>
+      <h2>Mi CV personal</h2>
+      <div class="row">
+        {cvPdf ? (
+          <><a class="btn" href={cvPdf.url} download={cvPdf.archivo}>Descargar CV en PDF</a><button class="btn ghost" type="button" data-ver={cvPdf.url} data-titulo="Mi CV">Ver PDF</button></>
+        ) : (
+          <><button class="btn" type="button" disabled>Descargar CV en PDF</button><span style="font-size:.88rem;color:var(--muted)">Coloca tu CV en <code>public/evidencias/cv/</code></span></>
+        )}
+      </div>
+    </div>
+
+    <article class="cv">
+      <div class="cv-side">
+        <div class="cv-photo">{sitio.foto ? <img src={withBase(sitio.foto)} alt={`Fotografía de ${sitio.nombre}`} /> : <span>{iniciales}</span>}</div>
+        <div>
+          <h3 style="font-size:1.5rem">{sitio.nombre}</h3>
+          <p style="color:var(--accent-ink);font-weight:700">Estudiante de Ingeniería Informática</p>
+          <ul class="cv-contact">
+            <li>monroyevelin33@gmail.com</li>
+            <li>Estado de México, México</li>
+            <li>Nacionalidad mexicana</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Conocimientos técnicos</h4>
+          <ul class="chips">
+            <li>Desarrollo de software</li><li>Python</li><li>FastAPI</li><li>APIs REST</li>
+            <li>Bases de datos SQL</li><li>ESP32</li><li>Arduino</li><li>Sistemas embebidos / IoT</li><li>Modelado UML</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Habilidades</h4>
+          {habilidades.map(([n, v, max]) => (
+            <div class="lvl"><span>{n}</span><span class="dots" role="img" aria-label={`${v} de ${max}`}>{Array.from({ length: max }, (_, i) => <i class={i < v ? 'on' : ''}></i>)}</span></div>
+          ))}
+        </div>
+        <div>
+          <h4>Idiomas</h4>
+          {idiomas.map(([n, v, max]) => (
+            <div class="lvl"><span>{n}</span><span class="dots" role="img" aria-label={`${v} de ${max}`}>{Array.from({ length: max }, (_, i) => <i class={i < v ? 'on' : ''}></i>)}</span></div>
+          ))}
+        </div>
+      </div>
+
+      <div class="cv-main">
+        <div>
+          <h4>Perfil profesional</h4>
+          <p>Estudiante de Ingeniería Informática con sólida formación en desarrollo de software, arquitectura de bases de datos y sistemas embebidos / IoT. Experiencia práctica en el diseño e implementación de prototipos electrónicos utilizando ESP32 y Arduino, desarrollo de APIs REST con Python/FastAPI y modelado de bases de datos SQL. Me destaco por mi capacidad analítica, resolución de problemas complejos y constante interés por el aprendizaje de nuevas tecnologías. Busco aportar mis conocimientos técnicos en proyectos innovadores de desarrollo y tecnología.</p>
+        </div>
+
+        <div>
+          <h4>Formación académica</h4>
+          <div class="item">
+            <span class="when">sep 2024 – ene 2029</span>
+            <b>Ingeniería Informática</b>
+            <small>Tecnológico de Estudios Superiores de San Felipe del Progreso · San Felipe del Progreso, Estado de México</small>
+          </div>
+        </div>
+
+        <div>
+          <h4>Experiencia</h4>
+          <div class="item">
+            <span class="when">2024 – 2025</span>
+            <b>Operador General</b>
+            <small>BIONATUR Invernaderos Biológicos · Hda. Pastejé, Estado de México</small>
+            <p style="margin-top:6px;font-size:.93rem">Encargada de la recolección manual de jitomate, asegurando el cumplimiento de las cuotas de cosecha diarias mediante una selección precisa de los frutos y un manejo adecuado para preservar la calidad del producto.</p>
+          </div>
+        </div>
+
+        <div>
+          <h4>Cursos y certificaciones</h4>
+          <div class="item"><span class="when">sep 2025</span><b>Artificial Intelligence Technology and Applications</b></div>
+          <div class="item"><span class="when">sep 2026</span><b>HCIA-Cloud Computing V5.5 Course</b></div>
+        </div>
+
+        <div>
+          <h4>Logros</h4>
+          <div class="item">
+            <b>Tercer lugar en el área de Impacto Social</b>
+            <small>Reality Latinoamericano · Desafío No. 5: Monitoreo Inteligente de Infraestructura Verde de Polis Pluviales</small>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <Evidencias seccion="cv" titulo="Mi CV en PDF y documentos de respaldo" />
+  </div>
+</section>

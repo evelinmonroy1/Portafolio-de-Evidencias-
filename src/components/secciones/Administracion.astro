@@ -1,0 +1,245 @@
+---
+import Icon from '../Icon.astro';
+import Evidencias from '../Evidencias.astro';
+import { obtenerDocumentos } from '../../lib/evidencias';
+import {
+  proyecto, semanas, alcance, entregables, responsables, tareas, hitos, riesgos, seguimiento, reflexion,
+} from '../../data/gestionProyecto';
+
+const docsCrono = obtenerDocumentos('administracion').filter((d) => /cronograma/i.test(d.archivo));
+const cronoPdf = docsCrono.find((d) => d.extension === 'PDF');
+const cronoPng = docsCrono.find((d) => d.extension === 'PNG');
+
+const total = tareas.length;
+const hechas = tareas.filter((t) => t.estado === 'Terminada').length;
+const avance = Math.round((hechas / total) * 100);
+const hitosLogrados = hitos.filter((h) => h.logrado).length;
+const columnas = ['Pendiente', 'En curso', 'Terminada'] as const;
+const claseEstado = { Terminada: 'st-ok', 'En curso': 'st-run', Pendiente: 'st-wait' } as const;
+
+// Matriz de riesgos: filas = probabilidad, columnas = impacto
+const probs = ['Alta', 'Media', 'Baja'] as const;
+const imps = ['Bajo', 'Medio', 'Alto'] as const;
+const severidad = (p: number, i: number) => {
+  const s = (2 - p) + i; // 0..4
+  return s >= 3 ? 'sev-alta' : s === 2 ? 'sev-media' : 'sev-baja';
+};
+---
+<section class="block" id="administracion">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="ico"><Icon name="kanban" /></span>05 · Tema</span>
+      <h2>Administración por proyectos</h2>
+      <div class="lead"><p>Administrar un proyecto es planear, organizar y controlar actividades, personas, recursos y tiempos para llegar a un objetivo concreto. Para practicarlo, planifiqué un proyecto real: este mismo portafolio digital.</p></div>
+    </div>
+
+    <div class="steps5">
+      <div><b>Inicio</b>Definir el problema y el objetivo</div>
+      <div><b>Planeación</b>Tareas, tiempos y recursos</div>
+      <div><b>Ejecución</b>Desarrollar el trabajo</div>
+      <div><b>Control</b>Medir avances y ajustar</div>
+      <div><b>Cierre</b>Entregar y evaluar</div>
+    </div>
+
+    <!-- Ficha del proyecto -->
+    <div class="card tint-lilac pm-ficha">
+      <span class="eyebrow">Mi proyecto</span>
+      <h3 style="font-size:1.5rem">{proyecto.nombre}</h3>
+      <p><b>Objetivo:</b> {proyecto.objetivo}</p>
+      <div class="pm-kpis">
+        <div><b>6</b><span>semanas · 26 oct – 4 dic 2026</span></div>
+        <div><b>{avance} %</b><span>de avance ({hechas} de {total} tareas)</span></div>
+        <div><b>{hitosLogrados}/{hitos.length}</b><span>hitos logrados</span></div>
+        <div><b>{riesgos.length}</b><span>riesgos identificados</span></div>
+      </div>
+      <div class="pm-progress" role="img" aria-label={`Avance del proyecto: ${avance} por ciento`}><i style={`width:${avance}%`}></i></div>
+    </div>
+
+    <!-- Alcance y entregables -->
+    <div class="grid g2" style="align-items:start">
+      <div class="card">
+        <h3>Alcance</h3>
+        <h4 class="mini-h" style="color:#2f6b55">Incluye</h4>
+        <ul class="checks">{alcance.incluye.map((x) => <li>{x}</li>)}</ul>
+        <h4 class="mini-h" style="color:var(--danger);margin-top:8px">No incluye</h4>
+        <ul class="xlist">{alcance.noIncluye.map((x) => <li>{x}</li>)}</ul>
+      </div>
+      <div class="card">
+        <h3>Entregables</h3>
+        <ol class="entregables">
+          {entregables.map((e) => <li><b>{e.nombre}</b><span>{e.fecha} · {e.responsable}</span></li>)}
+        </ol>
+      </div>
+    </div>
+
+    <!-- Responsables -->
+    <h3 class="subhead">Responsables</h3>
+    <div class="grid g3">
+      {responsables.map((r) => (
+        <div class="card"><span class="eyebrow">{r.rol}</span><h3>{r.nombre}</h3><p style="font-size:.93rem;color:var(--muted)">{r.tareas}</p></div>
+      ))}
+    </div>
+
+    <!-- Gantt / Tablero -->
+    <div class="row" style="justify-content:space-between">
+      <h3 class="subhead" style="margin:0">Cronograma y tablero de tareas</h3>
+      <div class="row pm-tabs" role="tablist" aria-label="Vista del cronograma">
+        <button class="btn sm on" type="button" role="tab" aria-selected="true" data-vista="gantt">Gantt</button>
+        <button class="btn sm" type="button" role="tab" aria-selected="false" data-vista="tablero">Tablero</button>
+      </div>
+    </div>
+        {(cronoPdf || cronoPng) && (
+      <div class="row poster-dl" style="margin:0">
+        <span>Descargar cronograma:</span>
+        {cronoPdf && <a class="btn sm" href={cronoPdf.url} download={cronoPdf.archivo}>PDF</a>}
+        {cronoPng && <a class="btn sm ghost" href={cronoPng.url} download={cronoPng.archivo}>Imagen PNG</a>}
+        {cronoPdf && <button class="btn sm soft" type="button" data-ver={cronoPdf.url} data-titulo="Cronograma Gantt">Ver en pantalla completa</button>}
+      </div>
+    )}
+    <div class="legend pm-legend">
+      <span class="lg st-ok">Terminada</span><span class="lg st-run">En curso</span><span class="lg st-wait">Pendiente</span><span class="lg-hito">Hito</span>
+    </div>
+
+    <div data-panel-vista="gantt">
+      <div class="tablebox">
+        <div class="pm-gantt" style={`--n:${semanas.length}`}>
+          <div class="pg-head pg-task">Tarea</div>
+          {semanas.map((s) => <div class="pg-head"><b>{s.id}</b><small>{s.fechas}</small></div>)}
+          <div class="pg-hitos pg-task">Hitos</div>
+          <div class="pg-hitos-row" style={`grid-column:2 / span ${semanas.length}`}>
+            {hitos.map((h) => (
+              <span class={`pg-diamond${h.logrado ? ' done' : ''}`} style={`left:calc(${(h.semana / semanas.length) * 100}% - 9px)`} title={`${h.id} · ${h.nombre} (${h.fecha})`}><i></i><small>{h.id}</small></span>
+            ))}
+          </div>
+          {tareas.map((t) => (
+            <>
+              <div class="pg-task">
+                <b>{t.id}</b> {t.nombre}
+                <small>{t.responsable}{t.depende.length > 0 && ` · depende de ${t.depende.join(', ')}`}</small>
+              </div>
+              <div class="pg-track" style={`grid-column:2 / span ${semanas.length}`}>
+                <span class={`pg-bar ${claseEstado[t.estado]}`} style={`left:${((t.inicio - 1) / semanas.length) * 100}%;width:${(t.dur / semanas.length) * 100}%`} aria-label={`${t.id}: semanas ${t.inicio} a ${t.inicio + t.dur - 1}, ${t.estado}`}></span>
+              </div>
+            </>
+          ))}
+          <span class="pg-today" data-inicio={proyecto.inicio} data-fin={proyecto.fin} hidden><small>Hoy</small></span>
+        </div>
+      </div>
+    </div>
+
+    <div data-panel-vista="tablero" hidden>
+      <div class="kanban">
+        {columnas.map((c) => (
+          <div class={`kcol ${claseEstado[c]}`}>
+            <h4>{c} <span>{tareas.filter((t) => t.estado === c).length}</span></h4>
+            {tareas.filter((t) => t.estado === c).map((t) => (
+              <div class="kcard">
+                <span class="kid">{t.id} · {semanas[t.inicio - 1].id}{t.dur > 1 ? `–${semanas[t.inicio + t.dur - 2].id}` : ''}</span>
+                <b>{t.nombre}</b>
+                <small>{t.responsable}</small>
+                {t.depende.length > 0 && <small class="kdep">Depende de: {t.depende.join(', ')}</small>}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Hitos -->
+    <h3 class="subhead">Hitos</h3>
+    <div class="grid g4">
+      {hitos.map((h) => (
+        <div class={`card hito${h.logrado ? ' ok' : ''}`}>
+          <span class="eyebrow">{h.id} · {h.fecha}</span>
+          <h3>{h.nombre}</h3>
+          <p style="font-size:.9rem;color:var(--muted)">{h.criterio}</p>
+          <span class={`pill ${h.logrado ? 'p-baja' : 'p-media'}`}>{h.logrado ? 'Logrado' : 'Pendiente'}</span>
+        </div>
+      ))}
+    </div>
+
+    <!-- Matriz de riesgos -->
+    <h3 class="subhead">Matriz de riesgos</h3>
+    <div class="riesgos-wrap">
+      <div class="card rm-card">
+        <div class="rmatrix" role="table" aria-label="Matriz de probabilidad por impacto">
+          <div class="rm-axis-y">Probabilidad</div>
+          <div class="rm-grid">
+            <span></span>{imps.map((i) => <span class="rm-h">{i}</span>)}
+            {probs.map((p, pi) => (
+              <>
+                <span class="rm-h rm-row">{p}</span>
+                {imps.map((im, ii) => (
+                  <div class={`rm-cell ${severidad(pi, ii)}`}>
+                    {riesgos.filter((r) => r.prob === p && r.impacto === im).map((r) => <span class="rm-chip" title={r.riesgo}>{r.id}</span>)}
+                  </div>
+                ))}
+              </>
+            ))}
+          </div>
+          <div class="rm-axis-x">Impacto</div>
+        </div>
+        <div class="legend" style="margin-top:6px"><span class="lg sev-alta">Atender primero</span><span class="lg sev-media">Vigilar</span><span class="lg sev-baja">Aceptable</span></div>
+      </div>
+      <div class="tablebox">
+        <table style="min-width:640px">
+          <thead><tr><th>Riesgo</th><th>Prevención</th><th>Si ocurre</th></tr></thead>
+          <tbody>
+            {riesgos.map((r) => (
+              <tr>
+                <td><b>{r.id}</b> {r.riesgo}<br /><small style="color:var(--muted)">P: {r.prob} · I: {r.impacto} · {r.responsable}</small></td>
+                <td>{r.prevencion}</td>
+                <td>{r.respuesta}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Seguimiento -->
+    <h3 class="subhead">Seguimiento</h3>
+    <p class="prose" style="margin-top:-8px;color:var(--muted)">{proyecto.revision}: actualizo el estado de cada tarea, comparo con el cronograma y anoto los ajustes.</p>
+    <div class="timeline">
+      {seguimiento.map((s) => (
+        <div class={`tl${s.estado === 'Pendiente' ? ' future' : ''}`}>
+          <span class="when">{s.semana}</span>
+          <p><span class={`pill ${s.estado === 'Pendiente' ? 'p-media' : 'p-baja'}`}>{s.estado}</span> {s.nota}</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Reflexión -->
+    <h3 class="subhead">Reflexión de cierre</h3>
+    <div class="quote">
+      <p style="font-weight:700;color:var(--accent-ink)">¿Qué ajustaría si ocurre un imprevisto?</p>
+      {reflexion.map((t) => <p>{t}</p>)}
+    </div>
+
+    <Evidencias seccion="administracion" />
+  </div>
+</section>
+
+<script>
+  // Alternar Gantt / Tablero
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.pm-tabs [data-vista]');
+  const paneles = document.querySelectorAll<HTMLElement>('[data-panel-vista]');
+  tabs.forEach((b) => b.addEventListener('click', () => {
+    tabs.forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', String(on)); });
+    paneles.forEach((p) => (p.hidden = p.dataset.panelVista !== b.dataset.vista));
+  }));
+
+  // Línea de "Hoy" en el Gantt
+  const hoy = document.querySelector<HTMLElement>('.pg-today');
+  if (hoy) {
+    const ini = new Date(hoy.dataset.inicio + 'T00:00:00').getTime();
+    const fin = new Date(hoy.dataset.fin + 'T23:59:59').getTime();
+    const ahora = Date.now();
+    if (ahora >= ini && ahora <= fin) {
+      const semanasTot = Math.round((fin - ini) / (7 * 864e5)) + 1;
+      const frac = Math.min(1, (ahora - ini) / (semanasTot * 7 * 864e5));
+      hoy.style.setProperty('--hoy', String(frac));
+      hoy.hidden = false;
+    }
+  }
+</script>

@@ -1,0 +1,12 @@
+{
+  "infografia-manejo-emocional.pdf": {
+    "titulo": "Infografía: manejo emocional",
+    "descripcion": "Ruta de cinco pasos y estrategias para cada emoción.",
+    "orden": 1
+  },
+  "reflexion-manejo-emocional.pdf": {
+    "titulo": "Reflexión personal",
+    "descripcion": "Lo que aprendí sobre reconocer y regular mis emociones.",
+    "orden": 2
+  }
+}

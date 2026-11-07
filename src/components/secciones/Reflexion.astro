@@ -1,0 +1,20 @@
+---
+import Icon from '../Icon.astro';
+import Evidencias from '../Evidencias.astro';
+import { sitio, iniciales } from '../../data/sitio';
+---
+<section class="block" id="reflexion">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="ico"><Icon name="spark" /></span>09 · Cierre</span>
+      <h2>Reflexión final</h2>
+    </div>
+    <div class="grid g3">
+      <div class="card tint-lilac"><h3>Lo que aprendí</h3><div><p>Que conocerme a mí misma es tan importante como aprender a programar. Entender mis emociones, mis fortalezas y mis áreas de oportunidad me ayuda a tomar mejores decisiones.</p></div></div>
+      <div class="card tint-blush"><h3>Cómo he evolucionado</h3><div><p>Hoy soy más organizada, tengo metas más claras y me siento más segura al presentar mi trabajo. También aprendí a pedir ayuda cuando la necesito.</p></div></div>
+      <div class="card tint-mint"><h3>Cómo me visualizo</h3><div><p>Me veo como una ingeniera que crea soluciones útiles, que sigue aprendiendo y que contribuye a su comunidad con ética y responsabilidad.</p></div></div>
+    </div>
+    <div class="quote"><p>Este portafolio es una fotografía de quién soy hoy y un recordatorio de hacia dónde voy. Lo seguiré actualizando conforme crezca como persona, estudiante y profesionista.</p><span class="who">{sitio.nombre}</span></div>
+    <Evidencias seccion="reflexion" />
+  </div>
+</section>

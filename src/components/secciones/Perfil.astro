@@ -1,0 +1,46 @@
+---
+import Icon from '../Icon.astro';
+import Evidencias from '../Evidencias.astro';
+import { sitio, iniciales } from '../../data/sitio';
+import { withBase } from '../../lib/evidencias';
+---
+<section class="block" id="perfil">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="ico"><Icon name="user" /></span>01 · Sobre mí</span>
+      <h2>Mi perfil</h2>
+    </div>
+    <div class="profile">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="photo">{sitio.foto ? <img src={withBase(sitio.foto)} alt={`Fotografía de ${sitio.nombre}`} /> : <><span class="initials">{iniciales}</span><span class="ph-note">Aquí irá tu fotografía</span></>}</div>
+        <div class="card">
+          <dl class="facts">
+            <dt>Nombre</dt><dd>{sitio.nombre}</dd>
+            <dt>Edad</dt><dd>20</dd>
+            <dt>Institución</dt><dd>Tecnológico de Estudios Superiores de San Felipe del Progreso</dd>
+            <dt>Carrera</dt><dd>Ingeniería Informática</dd>
+            <dt>Semestre</dt><dd>Quinto</dd>
+            <dt>Origen</dt><dd>Ejido de la Concepción de los Baños</dd>
+          </dl>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div class="prose lead"><p>Soy una persona curiosa, organizada y perseverante. Me gusta entender cómo funcionan las cosas y encontrar soluciones a problemas reales usando la tecnología. Disfruto aprender algo nuevo cada semana y compartirlo con quienes me rodean.</p></div>
+        <div class="grid g2">
+          <div class="card tint-lilac"><h3>Mi personalidad</h3><div><p>Soy tranquila y observadora, pero cuando un tema me apasiona me vuelvo muy participativa. Escucho antes de opinar y me gusta trabajar en equipo.</p></div></div>
+          <div class="card tint-blush"><h3>Gustos y pasatiempos</h3><div><ul><li>Escuchar música mientras programo</li><li>Leer y ver series</li><li>Dibujar y diseñar interfaces</li><li>Pasar tiempo con mi familia y amistades</li></ul></div></div>
+          <div class="card tint-sky"><h3>Intereses</h3><div><ul class="chips"><li>Desarrollo web</li><li>Inteligencia artificial</li><li>Diseño UX/UI</li><li>Bases de datos</li><li>Ciberseguridad</li></ul></div></div>
+          <div class="card tint-mint"><h3>Cualidades y fortalezas</h3><div><ul><li>Responsabilidad y puntualidad</li><li>Pensamiento lógico</li><li>Creatividad para presentar ideas</li><li>Capacidad de aprender por mi cuenta</li></ul></div></div>
+          <div class="card"><h3>Valores</h3><div><ul class="chips"><li>Honestidad</li><li>Respeto</li><li>Compromiso</li><li>Empatía</li><li>Disciplina</li></ul></div></div>
+          <div class="card"><h3>Habilidades</h3><div><ul><li>Programación en Java, Python y JavaScript</li><li>HTML y CSS para páginas web</li><li>Comunicación y trabajo colaborativo</li><li>Uso de herramientas de ofimática</li></ul></div></div>
+          <div class="card tint-butter"><h3>Experiencias importantes</h3><div><p>Mi primer programa funcionando, los proyectos en equipo de la carrera y los momentos en que superé materias difíciles me enseñaron que la constancia da resultados.</p></div></div>
+          <div class="card"><h3>Mis motivaciones</h3><div><p>Mi familia, el deseo de ser independiente y la idea de crear tecnología que facilite la vida de otras personas.</p></div></div>
+        </div>
+        <div class="grid g2">
+          <div class="card tint-lilac"><h3>¿Por qué elegí Ingeniería Informática?</h3><div><p>Desde pequeña me llamó la atención la computadora y todo lo que se podía hacer con ella. Elegí esta carrera porque combina lógica, creatividad y solución de problemas, y porque tiene muchas áreas para crecer.</p></div></div>
+          <div class="card tint-blush"><h3>Mis aspiraciones</h3><div><p><b>Personales:</b> ser una persona estable, segura de sí misma y cercana a su familia.</p><p><b>Profesionales:</b> trabajar como desarrolladora en una empresa de tecnología y, con el tiempo, liderar proyectos propios.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

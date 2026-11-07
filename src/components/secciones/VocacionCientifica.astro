@@ -1,0 +1,95 @@
+---
+import Icon from '../Icon.astro';
+import Evidencias from '../Evidencias.astro';
+import { sitio } from '../../data/sitio';
+import { obtenerDocumentos } from '../../lib/evidencias';
+import { poster, fuentes, sintesisGeneral, metodo, limitaciones, siguientePaso, reflexion } from '../../data/investigacion';
+
+
+const docsPoster = obtenerDocumentos('vocacion-cientifica').filter((d) => /poster/i.test(d.archivo));
+const posterPdf = docsPoster.find((d) => d.extension === 'PDF');
+const posterPng = docsPoster.find((d) => d.extension === 'PNG');
+---
+<section class="block" id="vocacion-cientifica">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="ico"><Icon name="flask" /></span>04 · Tema</span>
+      <h2>Vocación científica</h2>
+      <div class="lead"><p>La ciencia empieza con una pregunta. En informática, la investigación y la curiosidad son las que permiten crear nuevas herramientas, mejorar sistemas existentes y resolver problemas de forma innovadora.</p></div>
+    </div>
+    <div class="grid g4">
+      <div class="card tint-lilac"><h3>Investigación</h3><p>Buscar información confiable, comparar fuentes y documentar resultados antes de programar una solución.</p></div>
+      <div class="card tint-sky"><h3>Curiosidad</h3><p>Preguntarme por qué funciona un algoritmo y cómo podría funcionar mejor.</p></div>
+      <div class="card tint-mint"><h3>Pensamiento crítico</h3><p>Evaluar si una tecnología realmente resuelve el problema o solo está de moda.</p></div>
+      <div class="card tint-blush"><h3>Innovación</h3><p>Combinar ideas conocidas de forma nueva para generar valor.</p></div>
+    </div>
+
+    <!-- PÓSTER DE MINIINVESTIGACIÓN -->
+    <article class="poster" aria-labelledby="poster-title">
+      <header class="poster-head">
+        <span class="poster-tag">Póster de miniinvestigación</span>
+        <h3 id="poster-title">{poster.titulo}</h3>
+        <p>{sitio.nombre} · Ingeniería Informática, 5.º semestre · {poster.area} · {poster.fecha}</p>
+      </header>
+          {(posterPdf || posterPng) && (
+      <div class="row poster-dl">
+        <span>Descargar póster:</span>
+        {posterPdf && <a class="btn" href={posterPdf.url} download={posterPdf.archivo}>PDF para imprimir</a>}
+        {posterPng && <a class="btn ghost" href={posterPng.url} download={posterPng.archivo}>Imagen PNG</a>}
+        {posterPdf && <button class="btn soft" type="button" data-ver={posterPdf.url} data-titulo="Póster de miniinvestigación">Ver en pantalla completa</button>}
+      </div>
+    )}
+
+      <div class="poster-grid">
+        <div class="pcol">
+          <section class="pbox pq">
+            <h4><span>1</span>Pregunta de investigación</h4>
+            <p class="pq-text">{poster.pregunta}</p>
+          </section>
+          <section class="pbox">
+            <h4><span>2</span>Justificación</h4>
+            {poster.justificacion.map((t) => <p>{t}</p>)}
+          </section>
+          <div class="pstat"><b>{poster.dato.valor}</b><span>{poster.dato.texto}</span></div>
+        </div>
+
+        <div class="pcol">
+          <section class="pbox">
+            <h4><span>3</span>Fuentes académicas y síntesis propia</h4>
+            {fuentes.map((f, i) => (
+              <div class="fuente">
+                <span class="ftipo">Fuente {i + 1} · {f.tipo}</span>
+                <p class="fcita">{f.autores} ({f.anio}). <i>{f.titulo}</i>. {f.publicacion} <a href={f.url} target="_blank" rel="noopener">{f.url}</a></p>
+                <p class="fsint"><b>Síntesis:</b> {f.sintesis}</p>
+              </div>
+            ))}
+            <p class="fjunta"><b>Lo que dicen juntas:</b> {sintesisGeneral}</p>
+          </section>
+        </div>
+
+        <div class="pcol">
+          <section class="pbox">
+            <h4><span>4</span>Método propuesto</h4>
+            <ol>{metodo.map((m) => <li>{m}</li>)}</ol>
+          </section>
+          <section class="pbox pwarn">
+            <h4><span>5</span>Limitaciones</h4>
+            <ul>{limitaciones.map((m) => <li>{m}</li>)}</ul>
+          </section>
+          <section class="pbox pnext">
+            <h4><span>6</span>Siguiente paso</h4>
+            <p>{siguientePaso}</p>
+          </section>
+        </div>
+      </div>
+    </article>
+
+    <h3 class="subhead">Reflexión de cierre</h3>
+    <div class="quote">
+      <p style="font-weight:700;color:var(--accent-ink)">¿Cómo distinguiría una afirmación de una evidencia científica?</p>
+      {reflexion.map((t) => <p>{t}</p>)}
+    </div>
+
+    <Evidencias seccion="vocacion-cientifica" />
+  </div>
+</section>

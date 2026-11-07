@@ -1,0 +1,46 @@
+---
+import Icon from './Icon.astro';
+import { withBase } from '../lib/evidencias';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { proyecto: CollectionEntry<'proyectos'> }
+const p = Astro.props.proyecto.data;
+const imgs = p.imagenes.map(withBase);
+const evidencia = p.evidencia ? withBase(p.evidencia) : null;
+const nombreEvidencia = p.evidencia?.split('/').pop();
+---
+<article class="proj">
+  {imgs.length > 0 ? (
+    <button class="proj-media" type="button" data-zoom={imgs[0]} aria-label="Ampliar captura">
+      <img src={imgs[0]} alt={`Captura de ${p.titulo}`} loading="lazy" />
+    </button>
+  ) : (
+    <div class="proj-media" style="cursor:default"><Icon name="code" size={40} /></div>
+  )}
+  {imgs.length > 1 && (
+    <div class="thumbs">
+      {imgs.map((u, i) => (
+        <button type="button" class={i === 0 ? 'on' : ''} data-thumb={u} aria-label={`Ver captura ${i + 1}`}>
+          <img src={u} alt="" loading="lazy" />
+        </button>
+      ))}
+    </div>
+  )}
+  <div class="proj-body">
+    <h3>{p.titulo}</h3>
+    {p.tecnologias.length > 0 && <ul class="chips">{p.tecnologias.map((t) => <li>{t}</li>)}</ul>}
+    <dl>
+      <div><dt>Objetivo</dt><dd>{p.objetivo}</dd></div>
+      {p.funcionalidades.length > 0 && <div><dt>Funcionalidades</dt><dd><ul>{p.funcionalidades.map((f) => <li>{f}</li>)}</ul></dd></div>}
+      {p.participacion && <div><dt>Mi participación</dt><dd>{p.participacion}</dd></div>}
+      {p.resultados && <div><dt>Resultados</dt><dd>{p.resultados}</dd></div>}
+    </dl>
+    {(evidencia || p.enlace) && (
+      <div class="row">
+        {evidencia && <button class="btn sm soft" type="button" data-ver={evidencia} data-titulo={p.titulo}>Ver evidencia</button>}
+        {evidencia && <a class="btn sm ghost" href={evidencia} download={nombreEvidencia}>Descargar evidencia</a>}
+        {p.enlace && <a class="btn sm ghost" href={p.enlace} target="_blank" rel="noopener">Repositorio o demo</a>}
+      </div>
+    )}
+  </div>
+</article>

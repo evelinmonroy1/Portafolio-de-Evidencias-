@@ -1,0 +1,131 @@
+---
+import '../styles/global.css';
+import { sitio, iniciales } from '../data/sitio';
+import { withBase } from '../lib/evidencias';
+
+const enlaces = [
+  ['inicio', 'Inicio'],
+  ['perfil', 'Sobre mí'],
+  ['manejo-emocional', 'Manejo emocional'],
+  ['proyecto-de-vida', 'Proyecto de vida'],
+  ['vocacion-cientifica', 'Vocación científica'],
+  ['administracion', 'Administración por proyectos'],
+  ['plan-de-carrera', 'Plan de carrera'],
+  ['cv', 'Mi CV personal'],
+  ['proyectos', 'Mis proyectos'],
+  ['reflexion', 'Reflexión final'],
+];
+const marca = sitio.foto
+  ? `<img src="${withBase(sitio.foto)}" alt="">`
+  : iniciales;
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content={`Portafolio digital de Tutoría de ${sitio.nombre}, ${sitio.carrera}, ${sitio.semestre.toLowerCase()} semestre.`} />
+  <title>Portafolio de Tutoría · {sitio.nombre}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="topbar">
+    <a class="brand" href="#inicio"><span class="brand-mark" set:html={marca} /><span><strong>{sitio.nombre}</strong><small>Portafolio de Tutoría</small></span></a>
+    <button class="btn soft sm" id="menuBtn" aria-expanded="false" aria-controls="sidebar">Menú</button>
+  </div>
+  <div class="scrim" id="scrim"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Secciones del portafolio">
+    <a class="brand" href="#inicio"><span class="brand-mark" set:html={marca} /><span><strong>{sitio.nombre}</strong><small>{sitio.carrera} · {sitio.semestre.toLowerCase()} semestre</small></span></a>
+    <nav class="nav" id="nav">
+      {enlaces.map(([id, texto], i) => (
+        <a href={`#${id}`}><span class="num">{String(i).padStart(2, '0')}</span>{texto}</a>
+      ))}
+    </nav>
+    <div class="side-foot">Tutoría · {new Date().getFullYear()}</div>
+  </aside>
+
+  <main>
+    <slot />
+    <footer>Portafolio de Tutoría · {sitio.carrera} · {sitio.semestre} semestre · {sitio.nombre}</footer>
+  </main>
+
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box wide">
+      <div class="row" style="justify-content:space-between">
+        <h3 id="modalTitle">Documento</h3>
+        <div class="row">
+          <a class="btn sm ghost" id="modalOpen" href="#" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
+          <a class="btn sm" id="modalDl" href="#" download>Descargar</a>
+          <button class="btn sm soft" type="button" id="modalClose">Cerrar</button>
+        </div>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (s: string) => document.querySelector(s) as HTMLElement;
+    const sidebar = $('#sidebar'), scrim = $('#scrim'), menuBtn = $('#menuBtn');
+    const cerrarMenu = () => { sidebar.classList.remove('open'); scrim.classList.remove('show'); menuBtn.setAttribute('aria-expanded', 'false'); };
+    menuBtn.addEventListener('click', () => {
+      const abrir = !sidebar.classList.contains('open');
+      sidebar.classList.toggle('open', abrir); scrim.classList.toggle('show', abrir);
+      menuBtn.setAttribute('aria-expanded', String(abrir));
+    });
+    scrim.addEventListener('click', cerrarMenu);
+    document.querySelectorAll('#nav a, .sidebar .brand').forEach((a) => a.addEventListener('click', cerrarMenu));
+
+    // Resalta en el menú la sección visible
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('#nav a'));
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('section.block').forEach((s) => io.observe(s));
+
+    // Visor de documentos e imágenes
+    const modal = $('#modal'), body = $('#modalBody'), title = $('#modalTitle');
+    const openA = $('#modalOpen') as HTMLAnchorElement, dlA = $('#modalDl') as HTMLAnchorElement;
+    const abrirVisor = (url: string, titulo: string, esImagen = false) => {
+      title.textContent = titulo;
+      openA.href = url; dlA.href = url; dlA.setAttribute('download', decodeURIComponent(url.split('/').pop() || 'documento'));
+      body.innerHTML = '';
+      if (esImagen) {
+        const img = document.createElement('img'); img.src = url; img.alt = titulo; img.style.borderRadius = '12px'; img.style.margin = '0 auto';
+        body.appendChild(img);
+      } else {
+        const f = document.createElement('iframe'); f.src = url; f.className = 'viewer-frame'; f.title = titulo;
+        body.appendChild(f);
+      }
+      modal.classList.add('show');
+      ($('#modalClose')).focus();
+    };
+    const cerrarVisor = () => { modal.classList.remove('show'); body.innerHTML = ''; };
+    $('#modalClose').addEventListener('click', cerrarVisor);
+    modal.addEventListener('click', (e) => { if (e.target === modal) cerrarVisor(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('show')) cerrarVisor(); });
+
+    document.addEventListener('click', (e) => {
+      const t = (e.target as HTMLElement).closest<HTMLElement>('[data-ver],[data-zoom],[data-thumb]');
+      if (!t) return;
+      if (t.dataset.ver) {
+        // En celulares los PDF incrustados suelen fallar: se abren directo.
+        if (window.matchMedia('(max-width: 700px)').matches) { window.open(t.dataset.ver, '_blank'); return; }
+        abrirVisor(t.dataset.ver, t.dataset.titulo || 'Documento');
+      } else if (t.dataset.zoom) {
+        abrirVisor(t.dataset.zoom, 'Captura del proyecto', true);
+      } else if (t.dataset.thumb) {
+        const card = t.closest('.proj')!;
+        const media = card.querySelector<HTMLElement>('.proj-media');
+        const img = media?.querySelector('img');
+        if (img && media) { img.src = t.dataset.thumb; media.dataset.zoom = t.dataset.thumb; }
+        card.querySelectorAll('.thumbs button').forEach((b) => b.classList.toggle('on', b === t));
+      }
+    });
+  </script>
+</body>
+</html>

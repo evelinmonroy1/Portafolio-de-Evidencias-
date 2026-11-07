@@ -1,0 +1,140 @@
+---
+import Icon from '../Icon.astro';
+import Evidencias from '../Evidencias.astro';
+import {
+  proposito, perfiles, experienciaActual, escala, brechas, interpretacion, comparacion,
+  objetivoPlan, plan, tiempo, indicadores, reflexion, conclusion, fuentes,
+} from '../../data/rutaCarrera';
+
+const MAX = 3;
+const pct = (n: number) => (n / MAX) * 100;
+const etiquetaPerfil = { dev: 'Desarrollo', ciber: 'Ciberseguridad', ambos: 'Ambos perfiles' } as const;
+const totalBrecha = brechas.reduce((s, b) => s + (b.meta - b.actual), 0);
+const mayores = brechas.filter((b) => b.meta - b.actual >= 2).length;
+---
+<section class="block" id="plan-de-carrera">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="ico"><Icon name="briefcase" /></span>06 · Tema</span>
+      <h2>Plan de carrera: mi ruta de carrera</h2>
+      <div class="lead"><p>{proposito}</p></div>
+    </div>
+
+    <!-- Perfiles -->
+    <h3 class="subhead">Dos perfiles profesionales</h3>
+    <div class="grid g2" style="align-items:start">
+      {perfiles.map((p) => (
+        <article class={`card perfil perfil-${p.id}`}>
+          <span class="eyebrow">{p.numero}</span>
+          <h3 style="font-size:1.4rem">{p.nombre}</h3>
+          <p style="color:var(--muted)">{p.descripcion}</p>
+          <div>
+            <h4 class="mini-h">Tecnologías frecuentes en ofertas</h4>
+            <ul class="chips">{p.tecnologias.map((t) => <li>{t}</li>)}</ul>
+          </div>
+          <details class="comp">
+            <summary>Competencias solicitadas ({p.competencias.length})</summary>
+            <dl>
+              {p.competencias.map(([c, a]) => (<><dt>{c}</dt><dd>{a}</dd></>))}
+            </dl>
+          </details>
+        </article>
+      ))}
+    </div>
+    <p class="fine">Fuentes: O*NET OnLine y marco NICE del NIST. Los datos de tecnologías reflejan ofertas laborales de Estados Unidos en 2025, por lo que se toman como referencia internacional.</p>
+
+    <!-- Mapa de brechas -->
+    <h3 class="subhead">Mapa de brechas de habilidades</h3>
+    <div class="card" style="gap:16px">
+      <p class="prose">{experienciaActual}</p>
+      <div class="gap-stats">
+        <div><b>{brechas.length}</b><span>habilidades evaluadas</span></div>
+        <div><b>{totalBrecha}</b><span>niveles por cubrir</span></div>
+        <div><b>{mayores}</b><span>brechas de 2 niveles o más</span></div>
+      </div>
+      <div class="row gap-filter" role="group" aria-label="Filtrar por perfil">
+        <button class="btn sm on" type="button" data-f="todos" aria-pressed="true">Todas</button>
+        <button class="btn sm" type="button" data-f="dev" aria-pressed="false">Desarrollo</button>
+        <button class="btn sm" type="button" data-f="ciber" aria-pressed="false">Ciberseguridad</button>
+      </div>
+      <div class="gap-legend">
+        <span class="lg-now">Nivel actual</span><span class="lg-gap">Brecha</span><span class="lg-goal">Meta</span>
+      </div>
+      <div class="gap-scale" aria-hidden="true">
+        <span></span>
+        <div>{escala.map((e, i) => <span style={`left:${pct(i)}%`}>{i}<small>{e}</small></span>)}</div>
+        <span></span>
+      </div>
+      <ul class="gap-map">
+        {brechas.map((b) => (
+          <li data-perfil={b.perfil}>
+            <div class="gap-name"><b>{b.habilidad}</b><span class={`tagp tag-${b.perfil}`}>{etiquetaPerfil[b.perfil]}</span></div>
+            <div class="gap-bar" role="img" aria-label={`${b.habilidad}: nivel actual ${b.actual}, meta ${b.meta}, brecha ${b.meta - b.actual}`}>
+              <i class="g-now" style={`width:${pct(b.actual)}%`}></i>
+              <i class="g-gap" style={`left:${pct(b.actual)}%;width:${pct(b.meta - b.actual)}%`}></i>
+              <i class="g-goal" style={`left:${pct(b.meta)}%`}></i>
+            </div>
+            <div class="gap-num"><span class={`gap-pill gap-${b.meta - b.actual}`}>+{b.meta - b.actual}</span></div>
+            <p class="gap-step">{b.paso}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="fine">Escala: 0 = sin evidencia · 1 = básico · 2 = en desarrollo · 3 = competente para proyectos académicos. Es una autoevaluación inicial, no una certificación.</p>
+    </div>
+
+    <div class="grid g2" style="align-items:start">
+      <div class="card tint-lilac"><h3>Interpretación</h3><p>{interpretacion}</p></div>
+      <div class="card tint-sky"><h3>Comparación de los perfiles</h3><p>{comparacion}</p></div>
+    </div>
+
+    <!-- Plan de 6 meses -->
+    <h3 class="subhead">Plan de formación de seis meses</h3>
+    <p class="prose" style="margin-top:-8px"><b>Objetivo general:</b> {objetivoPlan}</p>
+    <ol class="ruta">
+      {plan.map((m) => (
+        <li>
+          <span class="ruta-mes"><small>Mes</small>{m.mes}</span>
+          <div class="ruta-body">
+            <h4>{m.enfoque}</h4>
+            <p>{m.actividades}</p>
+            <p class="ruta-ev"><b>Evidencia:</b> {m.evidencia}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <div class="grid g2" style="align-items:start">
+      <div class="card">
+        <h3>Distribución del tiempo</h3>
+        <p style="color:var(--muted)">Entre 5 y 7 horas por semana.</p>
+        <div class="tiempo">{tiempo.map((t) => <div><b>{t.horas}</b><span>{t.texto}</span></div>)}</div>
+        <p style="font-size:.92rem">Es preferible trabajar con un proyecto pequeño y terminado en cada etapa, en lugar de acumular cursos sin aplicar lo aprendido.</p>
+      </div>
+      <div class="card tint-butter">
+        <h3>Indicadores para comprobar el avance</h3>
+        <ul class="checks">{indicadores.map((x) => <li>{x}</li>)}</ul>
+      </div>
+    </div>
+
+    <h3 class="subhead">Reflexión de cierre</h3>
+    <div class="quote"><p>{reflexion}</p><span class="who">Competencia a priorizar: ciberseguridad aplicada al desarrollo de software</span></div>
+    <div class="card tint-mint"><h3>Conclusión</h3><p>{conclusion}</p></div>
+
+    <details class="comp card">
+      <summary>Fuentes de consulta (consultadas el 6 de noviembre de 2026)</summary>
+      <ol class="fuentes">{fuentes.map((f) => <li>{f.texto} <a href={f.url} target="_blank" rel="noopener">{f.url}</a></li>)}</ol>
+    </details>
+
+  
+  </div>
+</section>
+
+<script>
+  const btns = document.querySelectorAll<HTMLButtonElement>('.gap-filter [data-f]');
+  const filas = document.querySelectorAll<HTMLElement>('.gap-map li');
+  btns.forEach((b) => b.addEventListener('click', () => {
+    const f = b.dataset.f!;
+    btns.forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); });
+    filas.forEach((li) => { const p = li.dataset.perfil; li.hidden = !(f === 'todos' || p === f || p === 'ambos'); });
+  }));
+</script>

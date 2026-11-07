@@ -1,0 +1,12 @@
+{
+  "cronograma-gantt-portafolio.pdf": {
+    "titulo": "Cronograma Gantt (PDF)",
+    "descripcion": "Tareas, responsables, dependencias e hitos del proyecto de mi portafolio digital.",
+    "orden": 1
+  },
+  "cronograma-gantt-portafolio.png": {
+    "titulo": "Cronograma Gantt (imagen)",
+    "descripcion": "El mismo cronograma en formato PNG de alta resolución.",
+    "orden": 2
+  }
+}
